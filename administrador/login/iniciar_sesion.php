@@ -1,5 +1,9 @@
 <?php
 session_start();
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once('../../variable_global.php');
     
 require_once(ROOT_PATH . '/administrador/conexion.php');
@@ -15,7 +19,7 @@ if(isset($_POST['iniciar_sesion']) && $_POST['iniciar_sesion']){
         $usuario = $_POST['nombre_usuario'];
         $contrasena = $_POST['contrasena'];
 
-        $consultar_usuarios = $mysqli->prepare("SELECT usuarios.id_usuario, usuarios.usuario, usuarios.clave, usuarios.correo, tipo_usuario.tipo_usuario FROM usuarios
+        $consultar_usuarios = $conexion->prepare("SELECT usuarios.id_usuario, usuarios.usuario, usuarios.clave, usuarios.correo, tipo_usuario.tipo_usuario FROM usuarios
         INNER JOIN tipo_usuario ON tipo_usuario.id_tipo_usuario = usuarios.id_tipo_usuario
         WHERE usuarios.usuario = ? AND usuarios.clave = ?");
 
@@ -24,14 +28,14 @@ if(isset($_POST['iniciar_sesion']) && $_POST['iniciar_sesion']){
         $consultar_usuarios->store_result();
 
         if($consultar_usuarios->num_rows > 0){
-            $usuario_admin = $mysqli->prepare("SELECT usuarios.id_usuario, usuarios.usuario, usuarios.clave, usuarios.correo, tipo_usuario.tipo_usuario FROM usuarios
+            $usuario_admin = $conexion->prepare("SELECT usuarios.id_usuario, usuarios.usuario, usuarios.clave, usuarios.correo, tipo_usuario.tipo_usuario FROM usuarios
             INNER JOIN tipo_usuario ON tipo_usuario.id_tipo_usuario = usuarios.id_tipo_usuario
             WHERE tipo_usuario = 'admin' AND usuarios.usuario = ? AND usuarios.clave = ?");
             $usuario_admin->bind_param("ss",$usuario,$contrasena);
             $usuario_admin->execute();
             $usuario_admin->store_result();
 
-            $usuario_cliente = $mysqli->prepare("SELECT usuarios.id_usuario, usuarios.usuario, usuarios.clave, usuarios.correo, tipo_usuario.tipo_usuario FROM usuarios
+            $usuario_cliente = $conexion->prepare("SELECT usuarios.id_usuario, usuarios.usuario, usuarios.clave, usuarios.correo, tipo_usuario.tipo_usuario FROM usuarios
             INNER JOIN tipo_usuario ON tipo_usuario.id_tipo_usuario = usuarios.id_tipo_usuario
             WHERE tipo_usuario = 'cliente' AND usuarios.usuario = ? AND usuarios.clave = ?");
             $usuario_cliente->bind_param("ss",$usuario,$contrasena);
@@ -47,7 +51,7 @@ if(isset($_POST['iniciar_sesion']) && $_POST['iniciar_sesion']){
                 $id_usuario_adm_loguedo = $_SESSION['id_usuario_adm'];
                 $fecha_logueada_adm = date('Y-m-d H:i:s');
 
-                $insertar_hora_inicio_adm = $mysqli->prepare("INSERT INTO historial_logeos(id_usuario, fecha_inicio, fecha_cerro) VALUES (?,?,null)");
+                $insertar_hora_inicio_adm = $conexion->prepare("INSERT INTO historial_logeos(id_usuario, fecha_inicio, fecha_cerro) VALUES (?,?,null)");
                 $insertar_hora_inicio_adm->bind_param("is",$id_usuario_adm_loguedo,$fecha_logueada_adm);
                 $insertar_hora_inicio_adm->execute();
 
@@ -80,7 +84,7 @@ if(isset($_POST['iniciar_sesion']) && $_POST['iniciar_sesion']){
                 }
 
 
-                header("Location: " . BASE_URL . "/administrador/login/inicio_adm.php");
+                header("Location: " . BASE_URL . "/administrador/vuelos/ad.php");
                 
                 exit;
 
@@ -93,7 +97,7 @@ if(isset($_POST['iniciar_sesion']) && $_POST['iniciar_sesion']){
                 $id_usuario_cliente_logueado = $_SESSION['id_usuario_cliente'];
                 $fecha_logueada_cliente = date('Y-m-d H:i:s');
 
-                $insertar_hora_inicio_cliente = $mysqli->prepare("INSERT INTO historial_logeos(id_usuario, fecha_inicio, fecha_cerro) VALUES (?,?,null)");
+                $insertar_hora_inicio_cliente = $conexion->prepare("INSERT INTO historial_logeos(id_usuario, fecha_inicio, fecha_cerro) VALUES (?,?,null)");
                 $insertar_hora_inicio_cliente->bind_param("is",$id_usuario_cliente_logueado,$fecha_logueada_cliente);
                 $fecha_logueada_cliente->execute();
 

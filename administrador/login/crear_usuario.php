@@ -13,7 +13,7 @@ if(isset($_POST['subir_nuevo_usuario']) && $_POST['subir_nuevo_usuario']){
         $contrasena = $_POST['contrasena'];
         $email = $_POST['correo_electronico'];
 
-        $insertar_nuevo_usuario = $mysqli->prepare("INSERT INTO usuarios(usuario, clave, correo, id_tipo_usuario) VALUES (?,?,?,2)");
+        $insertar_nuevo_usuario = $conexion->prepare("INSERT INTO usuarios(usuario, clave, correo, id_tipo_usuario) VALUES (?,?,?,2)");
         $insertar_nuevo_usuario->bind_param("sss",$usuario,$contrasena,$email);
         
         if($insertar_nuevo_usuario->execute()){
