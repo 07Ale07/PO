@@ -58,12 +58,12 @@ if(isset($_POST['iniciar_sesion']) && $_POST['iniciar_sesion']){
                     $mail->isSMTP();
                     $mail->Host = 'smtp.gmail.com';
                     $mail->SMTPAuth = true;
-                    $mail->Username = '';
-                    $mail->Password = '';
+                    $mail->Username = 'intercittours@gmail.com';
+                    $mail->Password = 'jtqb rrfo yzas oocu ';
                     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                     $mail->Port = 587;
 
-                    $mail->setFrom('vega98790@gmail.com', 'Prueba');
+                    $mail->setFrom('intercittours@gmail.com', 'Prueba');
                     $mail->addAddress($correo_adm, 'Nuevo inicio de sesion en inter city turismo');
                     $mail->addCC('concopia@gmail.com');
 
