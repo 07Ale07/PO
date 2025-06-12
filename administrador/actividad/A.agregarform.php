@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agregar Hotel</title>
+    <title>Agregar Actividad</title>
     <style>
         .form-container {
             max-width: 600px;
@@ -40,6 +40,14 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             background-color: white;
+        }
+        .form-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 100px;
+            resize: vertical;
         }
         .form-submit {
             background-color: #4CAF50;
@@ -85,18 +93,43 @@
             color: #666;
             font-style: italic;
         }
+        .image-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .preview-image-item {
+            position: relative;
+            max-width: 100px;
+            max-height: 100px;
+        }
+        .remove-image {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #f44336;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            cursor: pointer;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
     <div class="form-container">
-        <h2>Agregar Nuevo Hotel</h2>
-        <form action="H.agregarhotelcod.php" method="post" enctype="multipart/form-data" id="hotelForm">
+        <h2>Agregar Nueva Actividad</h2>
+        <form action="A.agregaractividadcod.php" method="post" enctype="multipart/form-data" id="actividadForm">
             <table class="form-table">
                 <tr>
-                    <th>Nombre del Hotel</th>
+                    <th>Nombre de la Actividad</th>
                     <td>
-                        <input type="text" name="nombre" class="form-input" 
-                               placeholder="Ingrese el nombre del hotel" required>
+                        <input type="text" name="actividad" class="form-input" 
+                               placeholder="Ingrese el nombre de la actividad" required>
                     </td>
                 </tr>
                 <tr>
@@ -118,70 +151,114 @@
                 <tr>
                     <th>Ciudad</th>
                     <td>
-                        <select name="ciudad" id="ciudad" class="form-select" required disabled>
+                        <select name="id_ciudad" id="ciudad" class="form-select" required disabled>
                             <option value="">Primero seleccione un país</option>
                         </select>
                         <div id="loadingCiudades">Cargando ciudades...</div>
                     </td>
                 </tr>
                 <tr>
-                    <th>Precio por noche</th>
+                    <th>Precio</th>
                     <td>
                         <input type="number" name="precio" class="form-input" 
-                               placeholder="Ingrese el precio por noche" min="1" required>
+                               placeholder="Ingrese el precio" min="1" required>
                     </td>
                 </tr>
                 <tr>
-                    <th>Imagen del Hotel</th>
+                    <th>Descripción</th>
                     <td>
-                        <input type="file" name="imagen" id="imagen" class="form-input" accept="image/*" required>
-                        <div id="imagePreview" class="preview-image"></div>
+                        <textarea name="descripcion" class="form-textarea" 
+                                  placeholder="Ingrese una descripción detallada de la actividad" required></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Estado</th>
+                    <td>
+                        <select name="estado" class="form-select" required>
+                            <option value="1">Activo</option>
+                            <option value="0">Inactivo</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Imágenes (Múltiples)</th>
+                    <td>
+                        <input type="file" name="imagenes[]" id="imagenes" class="form-input" 
+                               accept="image/*" multiple required>
+                        <div id="imagePreview" class="image-preview-container"></div>
                         <p class="error-message" id="imageError"></p>
                     </td>
                 </tr>
             </table>
             
             <button type="submit" class="form-submit">
-                AGREGAR HOTEL
+                AGREGAR ACTIVIDAD
             </button>
             <a href="metodo.php" class="form-cancel">CANCELAR</a>
         </form>
     </div>
 
     <script>
-        // Vista previa de la imagen
-        document.getElementById('imagen').addEventListener('change', function(e) {
-            const preview = document.getElementById('imagePreview');
+        // Vista previa de múltiples imágenes
+        document.getElementById('imagenes').addEventListener('change', function(e) {
+            const previewContainer = document.getElementById('imagePreview');
             const error = document.getElementById('imageError');
-            const file = e.target.files[0];
+            const files = e.target.files;
             
-            preview.innerHTML = '';
+            previewContainer.innerHTML = '';
             error.textContent = '';
             
-            if (!file) return;
+            if (!files || files.length === 0) return;
             
-            if (!file.type.match('image.*')) {
-                error.textContent = 'El archivo debe ser una imagen';
+            // Validar cantidad de imágenes (opcional)
+            if (files.length > 5) {
+                error.textContent = 'Máximo 5 imágenes permitidas';
                 return;
             }
             
-            if (file.size > 2 * 1024 * 1024) { // 2MB
-                error.textContent = 'La imagen no debe exceder los 2MB';
-                return;
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                
+                if (!file.type.match('image.*')) {
+                    error.textContent = 'Todos los archivos deben ser imágenes';
+                    return;
+                }
+                
+                if (file.size > 2 * 1024 * 1024) { // 2MB
+                    error.textContent = 'Las imágenes no deben exceder los 2MB';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewItem = document.createElement('div');
+                    previewItem.className = 'preview-image-item';
+                    
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.maxWidth = '100%';
+                    img.style.maxHeight = '100%';
+                    
+                    const removeBtn = document.createElement('span');
+                    removeBtn.className = 'remove-image';
+                    removeBtn.innerHTML = '×';
+                    removeBtn.onclick = function() {
+                        previewItem.remove();
+                        // También deberías eliminar el archivo del input file
+                        // Esto requiere un manejo más avanzado con DataTransfer
+                    };
+                    
+                    previewItem.appendChild(img);
+                    previewItem.appendChild(removeBtn);
+                    previewContainer.appendChild(previewItem);
+                };
+                reader.readAsDataURL(file);
             }
             
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.style.maxWidth = '100%';
-                preview.appendChild(img);
-                preview.style.display = 'block';
-            }
-            reader.readAsDataURL(file);
+            previewContainer.style.display = 'flex';
         });
 
-        // Cargar ciudades según país seleccionado
+        // Cargar ciudades según país seleccionado (igual que en el ejemplo de hoteles)
         function cargarCiudades() {
             const paisSelect = document.getElementById('pais');
             const ciudadSelect = document.getElementById('ciudad');

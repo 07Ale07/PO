@@ -6,18 +6,17 @@ $search = isset($_GET['search']) ? $_GET['search'] : '';
 $estado = isset($_GET['estado']) ? $_GET['estado'] : 'todos';
 
 // Construir la consulta SQL con filtros
-$sql = "SELECT h.*, c.nombre_ciudad, p.nombre_pais 
-        FROM hoteles h
-        JOIN ciudades c ON h.id_ciudad = c.id_ciudad
-        JOIN paises p ON h.id_pais = p.id_pais
-        WHERE (h.hotel LIKE ? OR c.nombre_ciudad LIKE ? OR p.nombre_pais LIKE ? OR h.precio LIKE ?)";
+$sql = "SELECT a.*, c.nombre_ciudad 
+        FROM actividad a
+        LEFT JOIN ciudades c ON a.id_ciudad = c.id_ciudad
+        WHERE (a.actividad LIKE ? OR c.nombre_ciudad LIKE ? OR a.precio LIKE ? OR a.descripcion LIKE ?)";
 
 // Añadir filtro de estado si no es "todos"
 if ($estado !== 'todos') {
-    $sql .= " AND h.estado = ?";
+    $sql .= " AND a.estado = ?";
 }
 
-$sql .= " ORDER BY h.hotel ASC";
+$sql .= " ORDER BY a.actividad ASC";
 
 // Preparar la consulta
 $stmt = $conexion->prepare($sql);
@@ -38,7 +37,7 @@ $result = $stmt->get_result();
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Hoteles | Intercity Tour</title>
+    <title>Admin Actividades | Intercity Tour</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -87,7 +86,7 @@ $result = $stmt->get_result();
         
         /* Estilos para la sección de búsqueda */
         .search-section {
-            background-image: url('../img/hoteles/fond1.jpeg');
+            background-image: url('../img/actividades/fond1.jpeg');
             background-size: cover;
             background-position: center;
             position: relative;
@@ -104,7 +103,7 @@ $result = $stmt->get_result();
         }
         
         /* Estilos mejorados para las cards */
-        .hotel-card {
+        .activity-card {
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             border-radius: 12px;
             overflow: hidden;
@@ -114,34 +113,34 @@ $result = $stmt->get_result();
             background: white;
         }
         
-        .hotel-card:hover {
+        .activity-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.15);
         }
         
-        .hotel-card.inactive {
+        .activity-card.inactive {
             position: relative;
             opacity: 0.7;
         }
         
-        .hotel-image-container {
+        .activity-image-container {
             height: 220px;
             position: relative;
             overflow: hidden;
         }
         
-        .hotel-image {
+        .activity-image {
             height: 100%;
             width: 100%;
             object-fit: cover;
             transition: transform 0.5s ease;
         }
         
-        .hotel-card:hover .hotel-image {
+        .activity-card:hover .activity-image {
             transform: scale(1.05);
         }
         
-        .hotel-overlay {
+        .activity-overlay {
             position: absolute;
             bottom: 0;
             left: 0;
@@ -152,7 +151,7 @@ $result = $stmt->get_result();
             z-index: 1;
         }
         
-        .hotel-name {
+        .activity-name {
             font-size: 1.375rem;
             font-weight: 700;
             line-height: 1.3;
@@ -160,23 +159,23 @@ $result = $stmt->get_result();
             letter-spacing: 0.5px;
         }
         
-        .hotel-location {
+        .activity-location {
             display: flex;
             align-items: center;
             font-size: 0.875rem;
             opacity: 0.9;
         }
         
-        .hotel-location i {
+        .activity-location i {
             margin-right: 0.5rem;
             font-size: 1rem;
         }
         
-        .hotel-content {
+        .activity-content {
             padding: 1.25rem;
         }
         
-        .hotel-price-container {
+        .activity-price-container {
             background-color: #F0F9FF;
             border-radius: 8px;
             padding: 0.75rem;
@@ -196,12 +195,12 @@ $result = $stmt->get_result();
             line-height: 1;
         }
         
-        .price-night {
+        .price-person {
             font-size: 0.75rem;
             color: #9CA3AF;
         }
         
-        .hotel-actions {
+        .activity-actions {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -313,6 +312,17 @@ $result = $stmt->get_result();
             color: white;
             box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
         }
+        
+        .description-text {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #4B5563;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
@@ -333,11 +343,11 @@ $result = $stmt->get_result();
                 <!-- Menú principal -->
                 <div class="flex space-x-1 md:space-x-6">
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Vuelos</a>
-                    <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Hoteles</a>
+                    <a href="../hotel/hoteles.php" class="menu-item px-2 py-1 text-gray-800 font-medium">Hoteles</a>
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Paquetes</a>
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Autos</a>
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Asistencias</a>
-                    <a href="../actividad/actividad.php" class="menu-item px-2 py-1 text-gray-800 font-medium">Actividades</a>
+                    <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium text-blue-600">Actividades</a>
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Micros</a>
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Blog</a>
                 </div>
@@ -356,18 +366,18 @@ $result = $stmt->get_result();
         </div>
     </nav>
 
-    <!-- Barra de búsqueda con imagen de fondo (sin filtro azulado) -->
+    <!-- Barra de búsqueda con imagen de fondo -->
     <div class="search-section py-12">
         <div class="container mx-auto px-6 search-content">
             <form method="GET" action="" class="search-box rounded-xl p-6 max-w-4xl mx-auto">
                 <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                    <i class="fas fa-search mr-2"></i> Encontrá hoteles
+                    <i class="fas fa-search mr-2"></i> Encontrá actividades
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div class="md:col-span-3">
                         <label class="block text-sm font-medium text-gray-700 mb-1">Buscar</label>
                         <div class="relative">
-                            <input type="text" name="search" placeholder="Nombre, ciudad, país o precio" 
+                            <input type="text" name="search" placeholder="Nombre, ciudad, precio o descripción" 
                                    value="<?php echo htmlspecialchars($search); ?>" 
                                    class="w-full p-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
@@ -404,64 +414,68 @@ $result = $stmt->get_result();
         <!-- Botón agregar y contador -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <div class="text-gray-600 text-sm font-medium bg-white px-4 py-2 rounded-lg shadow-xs border border-gray-100">
-                <i class="fas fa-hotel mr-2 text-blue-500"></i>
-                Mostrando <span class="font-bold text-blue-600"><?php echo $result->num_rows; ?></span> hoteles
+                <i class="fas fa-ticket-alt mr-2 text-blue-500"></i>
+                Mostrando <span class="font-bold text-blue-600"><?php echo $result->num_rows; ?></span> actividades
             </div>
             <div>
-                <a href="./H.agregarform.php" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg flex items-center transition-all shadow-md hover:shadow-lg">
-                    <i class="fas fa-plus mr-2"></i> Agregar Hotel
+                <a href="A.agregarform.php" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg flex items-center transition-all shadow-md hover:shadow-lg">
+                    <i class="fas fa-plus mr-2"></i> Agregar Actividad
                 </a>
             </div>
         </div>
 
         <?php if ($result && $result->num_rows > 0): ?>
-            <!-- Grid de hoteles mejorado -->
+            <!-- Grid de actividades -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 <?php while ($fila = $result->fetch_assoc()): ?>
-                    <div class="hotel-card <?php echo ($fila['estado'] == 0) ? 'inactive' : ''; ?>">
+                    <div class="activity-card <?php echo ($fila['estado'] == 0) ? 'inactive' : ''; ?>">
                         <!-- Badge de estado -->
                         <div class="status-badge <?php echo ($fila['estado'] == 1) ? 'status-active' : 'status-inactive'; ?>">
                             <?php echo ($fila['estado'] == 1) ? 'Activo' : 'Inactivo'; ?>
                         </div>
                         
-                        <!-- Imagen del hotel con overlay -->
-                        <div class="hotel-image-container">
+                        <!-- Imagen de la actividad con overlay -->
+                        <div class="activity-image-container">
                             <?php if (!empty($fila['imagenes'])): ?>
                                 <?php 
                                 $ruta_imagen = '/cristian/PO/administrador' . htmlspecialchars($fila['imagenes']);
                                 ?>
-                                <img src="<?php echo $ruta_imagen; ?>" alt="<?php echo htmlspecialchars($fila['hotel']); ?>" class="hotel-image">
+                                <img src="<?php echo $ruta_imagen; ?>" alt="<?php echo htmlspecialchars($fila['actividad']); ?>" class="activity-image">
                             <?php else: ?>
-                                <div class="hotel-image bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-                                    <i class="fas fa-hotel text-gray-300 text-4xl"></i>
+                                <div class="activity-image bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                                    <i class="fas fa-ticket-alt text-gray-300 text-4xl"></i>
                                 </div>
                             <?php endif; ?>
-                            <div class="hotel-overlay">
-                                <h3 class="hotel-name"><?php echo htmlspecialchars($fila['hotel']); ?></h3>
-                                <div class="hotel-location">
+                            <div class="activity-overlay">
+                                <h3 class="activity-name"><?php echo htmlspecialchars($fila['actividad']); ?></h3>
+                                <div class="activity-location">
                                     <i class="fas fa-map-marker-alt"></i>
-                                    <span><?php echo htmlspecialchars($fila['nombre_ciudad']); ?>, <?php echo htmlspecialchars($fila['nombre_pais']); ?></span>
+                                    <span><?php echo htmlspecialchars($fila['nombre_ciudad'] ?? 'No especificada'); ?></span>
                                 </div>
                             </div>
                         </div>
                         
                         <!-- Contenido de la tarjeta -->
-                        <div class="hotel-content">
-                            <div class="hotel-price-container">
-                                <div class="price-label">Precio por noche</div>
+                        <div class="activity-content">
+                            <div class="activity-price-container">
+                                <div class="price-label">Precio por persona</div>
                                 <div class="price-value">$<?php echo number_format($fila['precio'], 0, ',', '.'); ?></div>
                             </div>
                             
+                            <div class="description-text mb-3">
+                                <?php echo htmlspecialchars($fila['descripcion']); ?>
+                            </div>
+                            
                             <!-- Acciones - Toggle switch mejorado -->
-                            <div class="hotel-actions">
+                            <div class="activity-actions">
                                 <label class="flex items-center space-x-2 cursor-pointer">
                                     <span class="text-sm text-gray-600">Estado:</span>
                                     <div class="toggle-switch">
-                                        <input type="checkbox" onchange="toggleEstado(<?php echo $fila['id_hotel']; ?>, this)" <?php echo ($fila['estado'] == 1) ? 'checked' : ''; ?>>
+                                        <input type="checkbox" onchange="toggleEstado(<?php echo $fila['id_actividad']; ?>, this)" <?php echo ($fila['estado'] == 1) ? 'checked' : ''; ?>>
                                         <span class="toggle-slider"></span>
                                     </div>
                                 </label>
-                                <a href="./H.updateform.php?codigo=<?php echo $fila['id_hotel']; ?>" 
+                                <a href="A.updateform.php?codigo=<?php echo $fila['id_actividad']; ?>" 
                                    class="edit-btn">
                                     <i class="fas fa-edit"></i> Editar
                                 </a>
@@ -473,10 +487,10 @@ $result = $stmt->get_result();
         <?php else: ?>
             <div class="no-results text-center py-16 rounded-xl shadow-sm border border-gray-100">
                 <div class="bg-white w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
-                    <i class="fas fa-hotel text-4xl text-gray-300"></i>
+                    <i class="fas fa-ticket-alt text-4xl text-gray-300"></i>
                 </div>
-                <h3 class="text-lg font-medium text-gray-700">No se encontraron hoteles</h3>
-                <p class="text-gray-500 mt-2 max-w-md mx-auto"><?php echo empty($search) ? 'No hay hoteles registrados todavía.' : 'No hay resultados para tu búsqueda.'; ?></p>
+                <h3 class="text-lg font-medium text-gray-700">No se encontraron actividades</h3>
+                <p class="text-gray-500 mt-2 max-w-md mx-auto"><?php echo empty($search) ? 'No hay actividades registradas todavía.' : 'No hay resultados para tu búsqueda.'; ?></p>
                 <?php if (!empty($search)): ?>
                     <a href="?" class="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
                         <i class="fas fa-redo mr-2"></i> Mostrar todos
@@ -487,17 +501,17 @@ $result = $stmt->get_result();
     </main>
 
     <script>
-    function toggleEstado(hotelId, checkbox) {
+    function toggleEstado(actividadId, checkbox) {
         const nuevoEstado = checkbox.checked ? 1 : 0;
-        const card = checkbox.closest('.hotel-card');
+        const card = checkbox.closest('.activity-card');
         const badge = card.querySelector('.status-badge');
 
-        fetch('update_estado.php', {
+        fetch('update_estado_actividad.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: 'id_hotel=' + hotelId + '&estado=' + nuevoEstado
+            body: 'id_actividad=' + actividadId + '&estado=' + nuevoEstado
         })
         .then(response => response.text())
         .then(data => {
@@ -537,5 +551,6 @@ $result = $stmt->get_result();
 </body>
 </html>
 <?php
+$stmt->close();
 $conexion->close();
 ?>
