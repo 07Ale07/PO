@@ -14,7 +14,7 @@ if (isset($_POST['cerrar_sesion'])) {
             $id_usuario = $id_adm_loguado ?? $id_cliente_loguado;
 
             
-            $seleccionar_tipo_usuario = $mysqli->prepare("
+            $seleccionar_tipo_usuario = $conexion->prepare("
                 SELECT usuarios.id_usuario, usuarios.usuario, usuarios.clave, usuarios.correo, usuarios.imagen_usuario, tipo_usuario.tipo_usuario 
                 FROM usuarios
                 INNER JOIN tipo_usuario ON usuarios.id_tipo_usuario = tipo_usuario.id_tipo_usuario
@@ -30,7 +30,7 @@ if (isset($_POST['cerrar_sesion'])) {
 
                 $fecha_logueada = date('Y-m-d H:i:s');
 
-                $buscar_historial = $mysqli->prepare("
+                $buscar_historial = $conexion->prepare("
                     SELECT id_historial_logeos 
                     FROM historial_logeos 
                     WHERE id_usuario = ? AND fecha_cerro IS NULL 
@@ -46,7 +46,7 @@ if (isset($_POST['cerrar_sesion'])) {
                 
 
                 if ($id_historial) {
-                    $actualizar_logueo = $mysqli->prepare("
+                    $actualizar_logueo = $conexion->prepare("
                         UPDATE historial_logeos 
                         SET fecha_cerro = ? 
                         WHERE id_historial_logeos = ?
