@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once('../../variable_global.php');
     
 require_once(ROOT_PATH . '/administrador/conexion.php');
@@ -38,8 +39,17 @@ if(isset($_POST['iniciar_sesion']) && $_POST['iniciar_sesion']){
             $usuario_cliente->store_result();
 
             if($usuario_admin->num_rows > 0){
-                $usuario_admin->bind_result = ($id_usuario_adm,$usuario_nombre_adm,$clave_adm,$correo_adm,$tipo_usuario_adm);
+                $usuario_admin->bind_result($id_usuario_adm,$usuario_nombre_adm,$clave_adm,$correo_adm,$tipo_usuario_adm);
                 $usuario_admin->fetch();
+
+                $_SESSION['id_usuario_adm'] = $id_usuario_adm;
+
+                $id_usuario_adm_loguedo = $_SESSION['id_usuario_adm'];
+                $fecha_logueada_adm = date('Y-m-d H:i:s');
+
+                $insertar_hora_inicio_adm = $mysqli->prepare("INSERT INTO historial_logeos(id_usuario, fecha_inicio, fecha_cerro) VALUES (?,?,null)");
+                $insertar_hora_inicio_adm->bind_param("is",$id_usuario_adm_loguedo,$fecha_logueada_adm);
+                $insertar_hora_inicio_adm->execute();
 
                 $mail = new PHPMailer(true);
 
@@ -48,12 +58,12 @@ if(isset($_POST['iniciar_sesion']) && $_POST['iniciar_sesion']){
                     $mail->isSMTP();
                     $mail->Host = 'smtp.gmail.com';
                     $mail->SMTPAuth = true;
-                    $mail->Username = 'su correo';
-                    $mail->Password = 'su clave privada';
+                    $mail->Username = '';
+                    $mail->Password = '';
                     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                     $mail->Port = 587;
 
-                    $mail->setFrom('su correo', 'Prueba');
+                    $mail->setFrom('vega98790@gmail.com', 'Prueba');
                     $mail->addAddress($correo_adm, 'Nuevo inicio de sesion en inter city turismo');
                     $mail->addCC('concopia@gmail.com');
 
@@ -76,8 +86,18 @@ if(isset($_POST['iniciar_sesion']) && $_POST['iniciar_sesion']){
 
             }elseif($usuario_cliente->num_rows > 0){
 
-                $usuario_cliente->bind_result = ($id_usuario_cliente,$usuario_nombre_cliente,$clave_cliente,$correo_cliente,$tipo_usuario_cliente);
+                $usuario_cliente->bind_result($id_usuario_cliente,$usuario_nombre_cliente,$clave_cliente,$correo_cliente,$tipo_usuario_cliente);
                 $usuario_cliente->fetch();
+                $_SESSION['id_usuario_cliente'] = $id_usuario_cliente;
+
+                $id_usuario_cliente_logueado = $_SESSION['id_usuario_cliente'];
+                $fecha_logueada_cliente = date('Y-m-d H:i:s');
+
+                $insertar_hora_inicio_cliente = $mysqli->prepare("INSERT INTO historial_logeos(id_usuario, fecha_inicio, fecha_cerro) VALUES (?,?,null)");
+                $insertar_hora_inicio_cliente->bind_param("is",$id_usuario_cliente_logueado,$fecha_logueada_cliente);
+                $fecha_logueada_cliente->execute();
+
+
                 $mail = new PHPMailer(true);
 
                 try {
