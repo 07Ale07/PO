@@ -1,15 +1,19 @@
-import CA from './CA';
+import { api } from '../api/CA';
 
 export default async function IS(usuario: string, clave: string): Promise<boolean> {
   try {
-    const res = await fetch(`${CA}/usuarios`);
-    const datos = await res.json();
-    const encontrado = datos.find(
-      (u: any) => u.usuario === usuario && u.clave === clave
-    );
-    return !!encontrado;
+    const response = await api.post('/login', { usuario, clave });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Login correcto:', data);
+      return true;
+    } else {
+      console.warn('Login fallido. Código:', response.status);
+      return false;
+    }
   } catch (error) {
-    console.error('Error en el login:', error);
+    console.error('Error al intentar iniciar sesión:', error);
     return false;
   }
 }

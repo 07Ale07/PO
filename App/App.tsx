@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Admin from './src/views/Admin';
 import MenuDrawer from './src/views/MenuDrawer';
-import IS from './IS';
+import IS from './src/logic/IS';
 
 const Drawer = createDrawerNavigator();
 
