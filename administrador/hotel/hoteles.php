@@ -428,7 +428,7 @@ $result = $stmt->get_result();
                         <div class="hotel-image-container">
                             <?php if (!empty($fila['imagenes'])): ?>
                                 <?php 
-                                $ruta_imagen = '/cristian/PO/administrador' . htmlspecialchars($fila['imagenes']);
+                                $ruta_imagen = '/olimpiadas_7timo/administrador' . htmlspecialchars($fila['imagenes']);
                                 ?>
                                 <img src="<?php echo $ruta_imagen; ?>" alt="<?php echo htmlspecialchars($fila['hotel']); ?>" class="hotel-image">
                             <?php else: ?>
