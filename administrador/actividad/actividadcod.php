@@ -1,7 +1,12 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 require '../conexion.php';
 
 // Configuración
+$directorio = $_SERVER["HTTP_ORIGIN"] . "/olimpiadas_7timo/administrador/";
+
 $directorio_destino = '../img/hoteles/';
 $max_file_size = 2 * 1024 * 1024; // 2MB
 $allowed_types = ['image/jpeg', 'image/png', 'image/webp'];
@@ -128,7 +133,7 @@ exit();
 // Función de errores
 function mostrarError($mensaje, $redireccion = '') {
     if (!empty($redireccion)) {
-        header("Location: $redireccion&error=" . urlencode($mensaje));
+        header("Location:" .  $directorio . "actividad.php?error=" . urlencode($mensaje));
     } else {
         die("Error: $mensaje");
     }

@@ -438,7 +438,7 @@ $result = $stmt->get_result();
                         <div class="activity-image-container">
                             <?php if (!empty($fila['imagenes'])): ?>
                                 <?php 
-                                $ruta_imagen = '/olimpiadas_7timo/administrador' . htmlspecialchars($fila['imagenes']);
+                                $ruta_imagen = '/olimpiadas_7timo/administrador/' . htmlspecialchars($fila['imagenes']);
                                 ?>
                                 <img src="<?php echo $ruta_imagen; ?>" alt="<?php echo htmlspecialchars($fila['actividad']); ?>" class="activity-image">
                             <?php else: ?>

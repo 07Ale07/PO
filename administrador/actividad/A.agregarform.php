@@ -121,6 +121,9 @@
     </style>
 </head>
 <body>
+    <?php
+    require_once('../../variable_global.php');
+    ?>
     <div class="form-container">
         <h2>Agregar Nueva Actividad</h2>
         <form action="A.agregaractividadcod.php" method="post" enctype="multipart/form-data" id="actividadForm">
@@ -194,7 +197,10 @@
             <button type="submit" class="form-submit">
                 AGREGAR ACTIVIDAD
             </button>
-            <a href="metodo.php" class="form-cancel">CANCELAR</a>
+            <?php
+            echo "<a href='" . BASE_URL . "/administrador/actividad/actividad.php'  class='form-cancel'>CANCELAR</a>";
+            ?>
+
         </form>
     </div>
 

@@ -144,7 +144,9 @@
             <button type="submit" class="form-submit">
                 AGREGAR HOTEL
             </button>
-            <a href="metodo.php" class="form-cancel">CANCELAR</a>
+            <?php
+            echo "<a href='" . BASE_URL . "/administrador/hotel/hoteles.php'  class='form-cancel'>CANCELAR</a>";
+            ?>
         </form>
     </div>
 

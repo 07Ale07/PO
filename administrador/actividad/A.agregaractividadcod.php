@@ -2,6 +2,8 @@
 require '../conexion.php';
 
 // Configuración de directorios (igual que en hoteles)
+$directorio = $_SERVER["HTTP_ORIGIN"] . "/olimpiadas_7timo/administrador/";
+
 $directorio_destino = '../img/hoteles/';
 $max_file_size = 2 * 1024 * 1024; // 2MB
 $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
@@ -149,7 +151,7 @@ try {
     $stmt->close();
     
     // Redirección con éxito
-    header("Location: metodo.php?success=1");
+    header("Location: ". $directorio . "actividad/actividad.php?success=1");
     exit();
     
 } catch (Exception $e) {
