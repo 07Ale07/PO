@@ -1,5 +1,25 @@
 <?php
 require '../conexion.php';
+session_start();
+function puedeAgregar($conexion) {
+    if (!isset($_SESSION['id_usuario_adm'])) {
+        return false;
+    }
+
+    $id_usuario = $_SESSION['id_usuario_adm'];
+
+    $resultado = $conexion->query("SELECT * FROM permiso_usuarios WHERE id_usuario = $id_usuario AND id_permiso = 1 LIMIT 1");
+
+    return $resultado && $resultado->num_rows > 0;
+}
+
+
+if (!puedeAgregar($conexion)) {
+    echo "<script>alert('no tenes permiso para modificar'); window.history.back();</script>";
+    exit;
+}else{
+
+
 
 // Configuración de directorios
 $directorio_destino = '../img/hoteles/';
@@ -124,4 +144,8 @@ function obtenerMensajeError($codigo) {
     ];
     return $errores[$codigo] ?? 'Error desconocido';
 }
+
+}
+
+
 ?>

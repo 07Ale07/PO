@@ -1,0 +1,111 @@
+/* Fuente base y fondo */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #eef3f9;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+/* Título centrado y elegante */
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+
+/* Tabla */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Encabezados */
+th {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 13px;
+}
+
+/* Celdas */
+td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+/* Fila hover */
+tr:hover {
+    background-color: #f1f7ff;
+}
+
+/* Formularios y checkboxes */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+label {
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* Botón */
+button {
+    background-color: #28a745;
+    color: white;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    align-self: flex-start;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+/* Responsive tabla */
+@media (max-width: 768px) {
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    th {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    td {
+        position: relative;
+        padding-left: 50%;
+        border: none;
+        border-bottom: 1px solid #ccc;
+    }
+
+    td:before {
+        position: absolute;
+        top: 12px;
+        left: 15px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    td:nth-of-type(1):before { content: "Usuario"; }
+    td:nth-of-type(2):before { content: "Permisos"; }
+    td:nth-of-type(3):before { content: "Acciones"; }
+}
