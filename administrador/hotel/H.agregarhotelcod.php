@@ -69,6 +69,7 @@ if (!file_exists($directorio_destino)) {
 $nombre_archivo = 'hotel_' . uniqid() . '.' . $file_extension;
 $ruta_completa = $directorio_destino . $nombre_archivo;
 
+
 // Mover el archivo subido
 if (!move_uploaded_file($file['tmp_name'], $ruta_completa)) {
     mostrarError("Error al guardar la imagen en el servidor");
@@ -94,7 +95,7 @@ try {
     $stmt->close();
     
     // Redireccionar con éxito
-    header("Location: metodo.php?success=1");
+    header("Location: hoteles.php?success=1");
     exit();
     
 } catch (Exception $e) {

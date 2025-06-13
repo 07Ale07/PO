@@ -249,4 +249,5 @@ $paises = $conexion->query($sql_paises);
 
 <?php 
 $conexion->close();
+
 ?>

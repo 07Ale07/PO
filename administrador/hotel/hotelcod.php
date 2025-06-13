@@ -2,7 +2,10 @@
 require '../conexion.php';
 
 // Configuración
-$directorio_destino = '../img/hoteles/';
+$directorio = $_SERVER["HTTP_ORIGIN"] . "/olimpiadas_7timo/administrador/";
+
+
+$directorio_destino = "../img/hoteles/";
 $max_file_size = 2 * 1024 * 1024; // 2MB
 $allowed_types = ['image/jpeg', 'image/png', 'image/webp'];
 $ruta_base = '/img/hoteles/'; // Ruta para la BD
@@ -11,6 +14,7 @@ $ruta_base = '/img/hoteles/'; // Ruta para la BD
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     mostrarError("Método no permitido", 'hoteles.php');
 }
+
 
 // Sanitizar entradas
 $nombre = trim($_POST['nombre'] ?? '');
@@ -71,8 +75,9 @@ if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
         mkdir($directorio_destino, 0755, true);
     }
 
+
     // Mover archivo
-    if (move_uploaded_file($file['tmp_name'], $ruta_completa)) {
+    if (move_uploaded_file($file['tmp_name'], $directorio_destino . $nombre_archivo)) {
         $imagen_subida = $ruta_base . $nombre_archivo;
         
         // Eliminar imagen anterior si existe
@@ -107,13 +112,13 @@ if (!$stmt->execute()) {
 }
 
 // Éxito
-header("Location: hoteles.php?success=1");
+header("Location: ". $directorio . "hotel/hoteles.php?success=1");
 exit();
 
 // Funciones auxiliares
 function mostrarError($mensaje, $redireccion = '') {
     if (!empty($redireccion)) {
-        header("Location: $redireccion&error=" . urlencode($mensaje));
+        header("Location:" .  $directorio . "hotel/hoteles.php?error=" . urlencode($mensaje));
     } else {
         die("Error: $mensaje");
     }
