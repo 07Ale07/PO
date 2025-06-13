@@ -332,7 +332,7 @@ $result = $stmt->get_result();
                 
                 <!-- Menú principal -->
                 <div class="flex space-x-1 md:space-x-6">
-                    <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Vuelos</a>
+                    <a href="../vuelos/ad.php" class="menu-item px-2 py-1 text-gray-800 font-medium">Vuelos</a>
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Hoteles</a>
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Paquetes</a>
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Autos</a>
