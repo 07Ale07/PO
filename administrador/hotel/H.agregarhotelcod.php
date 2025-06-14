@@ -1,6 +1,23 @@
 <?php
 require '../conexion.php';
+session_start();
+function puedeAgregar($conexion) {
+    if (!isset($_SESSION['id_usuario_adm'])) {
+        return false;
+    }
 
+    $id_usuario = $_SESSION['id_usuario_adm'];
+
+    $resultado = $conexion->query("SELECT * FROM permiso_usuarios WHERE id_usuario = $id_usuario AND id_permiso = 1 LIMIT 1");
+
+    return $resultado && $resultado->num_rows > 0;
+}
+
+
+if (!puedeAgregar($conexion)) {
+    echo "<script>alert('no tenés permiso para Agregar'); window.history.back();</script>";
+    exit;
+}else{
 // Configuración de directorios
 $directorio_destino = '../img/hoteles/';
 $max_file_size = 2 * 1024 * 1024; // 2MB
@@ -123,5 +140,6 @@ function obtenerMensajeError($codigo) {
         UPLOAD_ERR_EXTENSION => 'Una extensión de PHP detuvo la subida del archivo'
     ];
     return $errores[$codigo] ?? 'Error desconocido';
+}
 }
 ?>

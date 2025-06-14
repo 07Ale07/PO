@@ -1,0 +1,116 @@
+:root {
+    --color-primary: #3B82F6;
+    --color-secondary: #10B981;
+    --color-danger: #EF4444;
+    --color-warning: #F59E0B;
+    --color-gray: #6B7280;
+    --color-light: #F8FAFC;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--color-light);
+    margin: 0;
+    padding: 2rem;
+    color: #1F2937;
+}
+
+h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--color-primary);
+}
+
+/* Navegación */
+.menu-item {
+    transition: all 0.2s ease;
+    position: relative;
+    text-decoration: none;
+    color: #374151;
+    font-weight: 500;
+}
+
+.menu-item:hover {
+    color: var(--color-primary);
+}
+
+.menu-item:hover::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--color-primary);
+}
+
+/* Tabla */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+thead {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+th, td {
+    padding: 1rem;
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #F9FAFB;
+}
+
+tbody tr:hover {
+    background-color: #EFF6FF;
+}
+
+td a {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+td a:hover {
+    color: var(--color-secondary);
+}
+
+/* Estado */
+td:nth-child(10) {
+    font-weight: 600;
+    color: var(--color-secondary);
+}
+
+td:nth-child(10):contains('Inactivo') {
+    color: var(--color-danger);
+}
+
+/* Botón agregar */
+.add-btn {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--color-primary);
+    color: white;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+    transition: all 0.2s ease;
+}
+
+.add-btn:hover {
+    background-color: #2563EB;
+    transform: translateY(-2px);
+}

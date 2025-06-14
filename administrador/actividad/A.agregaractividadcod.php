@@ -1,4 +1,5 @@
 <?php
+session_start();
 require '../conexion.php';
 
 // Configuración de directorios (igual que en hoteles)

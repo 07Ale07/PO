@@ -1,4 +1,5 @@
 <?php
+session_start();
 require '../conexion.php';
 
 // Parámetros de búsqueda
@@ -323,6 +324,54 @@ $result = $stmt->get_result();
             font-size: 0.875rem;
             line-height: 1.5;
         }
+        /* Estilo base para el formulario de cierre de sesión */
+.logout-form {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+
+/* Estilo para el botón de cierre de sesión */
+.logout-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    color: #6B7280; /* Color gris similar a tus otros enlaces */
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Efecto hover - rojo para indicar acción de salida */
+.logout-btn:hover {
+    color: #EF4444; /* Rojo */
+    background-color: #FEE2E2; /* Fondo rojo claro */
+    transform: translateY(-1px);
+}
+
+/* Versión con icono (opcional) */
+.logout-btn i {
+    font-size: 1rem;
+}
+
+/* Versión para pantallas pequeñas */
+@media (max-width: 768px) {
+    .logout-btn {
+        padding: 0.5rem;
+        font-size: 0.875rem;
+    }
+    .logout-btn span {
+        display: none; /* Ocultar texto en móviles */
+    }
+    .logout-btn i {
+        margin-right: 0;
+        font-size: 1.25rem;
+    }
+}
     </style>
 </head>
 <body>
@@ -350,6 +399,8 @@ $result = $stmt->get_result();
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium text-blue-600">Actividades</a>
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Micros</a>
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Blog</a>
+
+                    
                 </div>
                 
                 <!-- Selector de moneda y usuario -->

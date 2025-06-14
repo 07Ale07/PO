@@ -1,4 +1,5 @@
 <?php
+session_start();
 require '../conexion.php';
 $directorio = $_SERVER["HTTP_ORIGIN"] . "/olimpiadas_7timo/administrador/";
 

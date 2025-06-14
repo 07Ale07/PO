@@ -334,13 +334,16 @@ $result = $stmt->get_result();
                 <div class="flex space-x-1 md:space-x-6">
                     <a href="../vuelos/ad.php" class="menu-item px-2 py-1 text-gray-800 font-medium">Vuelos</a>
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Hoteles</a>
-                    <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Paquetes</a>
+                    <a href="../paquetes/paquetes.php" class="menu-item px-2 py-1 text-gray-800 font-medium">Paquetes</a>
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Autos</a>
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Asistencias</a>
                     <a href="../actividad/actividad.php" class="menu-item px-2 py-1 text-gray-800 font-medium">Actividades</a>
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Micros</a>
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Blog</a>
+                    
                 </div>
+
+                
                 
                 <!-- Selector de moneda y usuario -->
                 <div class="flex items-center space-x-4 mt-4 md:mt-0">
@@ -485,6 +488,7 @@ $result = $stmt->get_result();
             </div>
         <?php endif; ?>
     </main>
+  
 
     <script>
     function toggleEstado(hotelId, checkbox) {
@@ -534,6 +538,7 @@ $result = $stmt->get_result();
         });
     }
     </script>
+    
 </body>
 </html>
 <?php

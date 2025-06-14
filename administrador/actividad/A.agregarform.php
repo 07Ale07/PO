@@ -122,6 +122,7 @@
 </head>
 <body>
     <?php
+    session_start();
     require_once('../../variable_global.php');
     ?>
     <div class="form-container">
@@ -132,7 +133,7 @@
                     <th>Nombre de la Actividad</th>
                     <td>
                         <input type="text" name="actividad" class="form-input" 
-                               placeholder="Ingrese el nombre de la actividad" required>
+                        placeholder="Ingrese el nombre de la actividad" required>
                     </td>
                 </tr>
                 <tr>
