@@ -13,6 +13,16 @@
 
 </head>
 <body>
+    <?php
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
+
+    require_once('../../variable_global.php');
+    require_once(ROOT_PATH . '/administrador/conexion.php');
+    session_start();
+
+    ?>
      <div class="flex space-x-1 md:space-x-6">
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Vuelos</a>
                     <a href="../hotel/hoteles.php" class="menu-item px-2 py-1 text-gray-800 font-medium">Hoteles</a>
@@ -23,17 +33,18 @@
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Micros</a>
                     <a href="#" class="menu-item px-2 py-1 text-gray-800 font-medium">Blog</a>
 
+                    <div class="mt-4 md:mt-0">
+                    <form action="<?= BASE_URL ?>/administrador/logouts/cerrar_sesion.php" method="POST">
+                        <input type="hidden" name="cerrar_sesion" value="1">
+                        <button type="submit" class="flex items-center text-red-600 hover:text-red-800 transition">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Cerrar sesión
+                        </button>
+                    </form>
+                    </div>
                     
     </div>
 
     <?php
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
-
-    require_once('../../variable_global.php');
-    require_once(ROOT_PATH . '/administrador/conexion.php');
-
     $traer_paquetes = "
     SELECT paquetes.id_paquete, 
            categoria_paquetes.categoria,
@@ -90,7 +101,7 @@
                     <td>{$row['tiempo']}</td>
                     <td>{$row['gama']}</td>
                     <td>" . ($row['activo'] == 1 ? 'Activo' : 'Inactivo') . "</td>
-                    <td><a href='" . BASE_URL . "/administrador/paquetes/paquetes.php?id={$row['id_paquete']}'>Detalle</a></td>
+                    <td><a href='" . BASE_URL . "/administrador/paquetes/detalle_paquete.php?id={$row['id_paquete']}'>Detalle</a></td>
                     <td><a href='" . BASE_URL . "/administrador/paquetes/formulario_modificar_paquete.php?id={$row['id_paquete']}'>Modificar</a></td>
                     <td><a href='" . BASE_URL . "/administrador/paquetes/eliminar_paquete.php?id={$row['id_paquete']}'>" . 
                         ($row['activo'] == 1 ? 'Desactivar' : 'Activar') . "</a></td>

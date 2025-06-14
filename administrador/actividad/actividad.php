@@ -1,16 +1,34 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 session_start();
+require_once('../../variable_global.php');
 require '../conexion.php';
 
 // Parámetros de búsqueda
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $estado = isset($_GET['estado']) ? $_GET['estado'] : 'todos';
 
-// Construir la consulta SQL con filtros
-$sql = "SELECT a.*, c.nombre_ciudad 
+// Construir la consulta SQL base
+$sql = "SELECT 
+            a.id_actividad, 
+            a.actividad, 
+            a.descripcion, 
+            a.precio, 
+            a.estado, 
+            a.imagenes,
+            c.nombre_ciudad,
+            ac.id_actividad_ciudad
         FROM actividad a
-        LEFT JOIN ciudades c ON a.id_ciudad = c.id_ciudad
-        WHERE (a.actividad LIKE ? OR c.nombre_ciudad LIKE ? OR a.precio LIKE ? OR a.descripcion LIKE ?)";
+        LEFT JOIN actividad_ciudad ac ON a.id_actividad = ac.id_actividad
+        LEFT JOIN ciudades c ON ac.id_ciudad = c.id_ciudad
+        WHERE 1=1";
+
+// Añadir filtro de búsqueda si hay término
+if (!empty($search)) {
+    $sql .= " AND (a.actividad LIKE ? OR c.nombre_ciudad LIKE ? OR a.precio LIKE ? OR a.descripcion LIKE ?)";
+}
 
 // Añadir filtro de estado si no es "todos"
 if ($estado !== 'todos') {
@@ -22,12 +40,14 @@ $sql .= " ORDER BY a.actividad ASC";
 // Preparar la consulta
 $stmt = $conexion->prepare($sql);
 
-if ($estado !== 'todos') {
+if (!empty($search) && $estado !== 'todos') {
     $searchParam = "%$search%";
     $stmt->bind_param("ssssi", $searchParam, $searchParam, $searchParam, $searchParam, $estado);
-} else {
+} elseif (!empty($search)) {
     $searchParam = "%$search%";
     $stmt->bind_param("ssss", $searchParam, $searchParam, $searchParam, $searchParam);
+} elseif ($estado !== 'todos') {
+    $stmt->bind_param("i", $estado);
 }
 
 $stmt->execute();
@@ -409,8 +429,13 @@ $result = $stmt->get_result();
                         <span class="text-sm mr-1">AR</span>
                         <span class="text-sm font-medium">(ARS)</span>
                     </div>
-                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        <span class="text-gray-600">N</span>
+                     <div class="mt-4 md:mt-0">
+                    <form action="<?= BASE_URL ?>/administrador/logouts/cerrar_sesion.php" method="POST">
+                        <input type="hidden" name="cerrar_sesion" value="1">
+                        <button type="submit" class="flex items-center text-red-600 hover:text-red-800 transition">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Cerrar sesión
+                        </button>
+                    </form>
                     </div>
                 </div>
             </div>

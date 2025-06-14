@@ -8,6 +8,7 @@ if ($id_paquete <= 0) {
     die("ID de paquete no válido.");
 }
 
+// Obtener datos del paquete
 $query = "SELECT * FROM paquetes WHERE id_paquete = $id_paquete";
 $result = $conexion->query($query);
 
@@ -16,6 +17,29 @@ if (!$result || $result->num_rows === 0) {
 }
 
 $paquete = $result->fetch_assoc();
+
+// Obtener ciudad destino del vuelo
+$query_ciudad = "
+    SELECT c.id_ciudad, c.nombre_ciudad 
+    FROM vuelos v
+    JOIN ciudades c ON v.id_ciudad_destino = c.id_ciudad
+    WHERE v.id_vuelo = {$paquete['id_vuelo']}
+";
+$result_ciudad = $conexion->query($query_ciudad);
+if (!$result_ciudad || $result_ciudad->num_rows === 0) {
+    die("Ciudad destino no encontrada para el vuelo.");
+}
+$ciudad_destino = $result_ciudad->fetch_assoc();
+$id_ciudad_destino = $ciudad_destino['id_ciudad'];
+
+// Obtener actividades para la ciudad destino
+$query_actividades = "
+    SELECT a.id_actividad, a.actividad 
+    FROM actividad a
+    JOIN actividad_ciudad ac ON a.id_actividad = ac.id_actividad
+    WHERE ac.id_ciudad = $id_ciudad_destino AND a.estado = 1
+";
+$result_actividades = $conexion->query($query_actividades);
 ?>
 
 <!DOCTYPE html>
@@ -25,7 +49,7 @@ $paquete = $result->fetch_assoc();
     <title>Editar Paquete</title>
     <link rel="stylesheet" href="p.css">
     <style>
-        <?php // Estilos iguales que en agregar ?>
+        <?php // Puedes incluir aquí estilos adicionales iguales que en agregar ?>
     </style>
 </head>
 <body>
@@ -97,6 +121,18 @@ $paquete = $result->fetch_assoc();
                 </select>
             </div>
 
+            <!-- Actividades en la ciudad destino -->
+            <div class="form-group">
+                <label for="actividad">Actividades en la ciudad destino:</label>
+                <select name="id_actividad" required>
+                    <option value="">Seleccione una actividad</option>
+                    <?php
+                    while ($row = $result_actividades->fetch_assoc()) {
+                        echo "<option value='{$row['id_actividad']}'>{$row['actividad']}</option>";
+                    }
+                    ?>
+                </select>
+            </div>
 
             <div class="form-group">
                 <input type="submit" value="Actualizar Paquete" class="btn-submit">

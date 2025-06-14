@@ -1,5 +1,8 @@
 <?php
+require_once('../../variable_global.php');
+require_once(ROOT_PATH . '/administrador/conexion.php');
 require '../conexion.php';
+session_start();
 
 // Parámetros de búsqueda
 $search = isset($_GET['search']) ? $_GET['search'] : '';
@@ -351,9 +354,14 @@ $result = $stmt->get_result();
                         <span class="text-sm mr-1">AR</span>
                         <span class="text-sm font-medium">(ARS)</span>
                     </div>
-                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        <span class="text-gray-600">N</span>
-                    </div>
+                    <div class="mt-4 md:mt-0">
+                    <form action="<?= BASE_URL ?>/administrador/logouts/cerrar_sesion.php" method="POST">
+                        <input type="hidden" name="cerrar_sesion" value="1">
+                        <button type="submit" class="flex items-center text-red-600 hover:text-red-800 transition">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Cerrar sesión
+                        </button>
+                    </form>
+                </div>
                 </div>
             </div>
         </div>
