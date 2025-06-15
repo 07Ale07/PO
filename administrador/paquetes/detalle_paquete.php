@@ -5,6 +5,7 @@ error_reporting(E_ALL);
 
 require_once('../../variable_global.php');
 require_once(ROOT_PATH . '/administrador/conexion.php');
+session_start();
 
 // Verificar si se recibió el ID del paquete
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {

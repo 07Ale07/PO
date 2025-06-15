@@ -1,142 +1,156 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once('../../variable_global.php');
 require_once(ROOT_PATH . '/administrador/conexion.php');
+session_start();
 
-$id_paquete = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-
-if ($id_paquete <= 0) {
-    die("ID de paquete no válido.");
+// Validar ID del paquete
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    header("Location: " . BASE_URL . "/administrador/paquetes/paquetes.php");
+    exit();
 }
+
+$id_paquete = (int)$_GET['id'];
 
 // Obtener datos del paquete
-$query = "SELECT * FROM paquetes WHERE id_paquete = $id_paquete";
-$result = $conexion->query($query);
+$consulta_paquete = "SELECT * FROM paquetes WHERE id_paquete = ?";
+$stmt = $conexion->prepare($consulta_paquete);
+$stmt->bind_param("i", $id_paquete);
+$stmt->execute();
+$res_paquete = $stmt->get_result();
 
-if (!$result || $result->num_rows === 0) {
-    die("Paquete no encontrado.");
+if ($res_paquete->num_rows === 0) {
+    echo "<script>alert('Paquete no encontrado.'); window.location.href='paquetes.php';</script>";
+    exit();
 }
 
-$paquete = $result->fetch_assoc();
+$paquete = $res_paquete->fetch_assoc();
 
-// Obtener ciudad destino del vuelo
-$query_ciudad = "
-    SELECT c.id_ciudad, c.nombre_ciudad 
+// Obtener ciudad destino desde el vuelo
+$sql_ciudad = "
+    SELECT c.id_ciudad 
     FROM vuelos v
     JOIN ciudades c ON v.id_ciudad_destino = c.id_ciudad
-    WHERE v.id_vuelo = {$paquete['id_vuelo']}
+    WHERE v.id_vuelo = ?
 ";
-$result_ciudad = $conexion->query($query_ciudad);
-if (!$result_ciudad || $result_ciudad->num_rows === 0) {
-    die("Ciudad destino no encontrada para el vuelo.");
-}
-$ciudad_destino = $result_ciudad->fetch_assoc();
-$id_ciudad_destino = $ciudad_destino['id_ciudad'];
+$stmt = $conexion->prepare($sql_ciudad);
+$stmt->bind_param("i", $paquete['id_vuelo']);
+$stmt->execute();
+$res_ciudad = $stmt->get_result();
+$id_ciudad_destino = $res_ciudad->fetch_assoc()['id_ciudad'] ?? null;
 
-// Obtener actividades para la ciudad destino
-$query_actividades = "
+// Actividades disponibles
+$sql_actividades = "
     SELECT a.id_actividad, a.actividad 
     FROM actividad a
     JOIN actividad_ciudad ac ON a.id_actividad = ac.id_actividad
-    WHERE ac.id_ciudad = $id_ciudad_destino AND a.estado = 1
+    WHERE ac.id_ciudad = ? AND a.estado = 1
 ";
-$result_actividades = $conexion->query($query_actividades);
+$stmt = $conexion->prepare($sql_actividades);
+$stmt->bind_param("i", $id_ciudad_destino);
+$stmt->execute();
+$actividades = $stmt->get_result();
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Editar Paquete</title>
-    <link rel="stylesheet" href="p.css">
-    <style>
-        <?php // Puedes incluir aquí estilos adicionales iguales que en agregar ?>
-    </style>
+    <title>Editar Paquete #<?= $paquete['id_paquete'] ?></title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Editar Paquete</h1>
-    
-    <div class="form-container">
-        <form action="actualizar_paquete.php" method="POST">
-            <input type="hidden" name="id_paquete" value="<?php echo $paquete['id_paquete']; ?>">
+<body class="bg-gray-100 p-6 font-sans">
+    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-8">
+        <h1 class="text-2xl font-bold mb-6">Editar Paquete #<?= $paquete['id_paquete'] ?></h1>
+        <form action="actualizar_paquete.php" method="POST" class="space-y-6">
+            <input type="hidden" name="id_paquete" value="<?= $paquete['id_paquete'] ?>">
 
             <!-- Categoría -->
-            <div class="form-group">
-                <label for="categoria">Categoría:</label>
-                <select name="id_categoria" required>
+            <div>
+                <label class="block text-gray-700 font-semibold mb-1">Categoría</label>
+                <select name="id_categoria" required class="w-full border rounded px-3 py-2">
                     <?php
                     $res = $conexion->query("SELECT id_categoria, categoria FROM categoria_paquetes");
                     while ($row = $res->fetch_assoc()) {
-                        $selected = ($row['id_categoria'] == $paquete['id_categoria']) ? 'selected' : '';
-                        echo "<option value='{$row['id_categoria']}' $selected>{$row['categoria']}</option>";
+                        $sel = ($row['id_categoria'] == $paquete['id_categoria']) ? 'selected' : '';
+                        echo "<option value='{$row['id_categoria']}' $sel>{$row['categoria']}</option>";
                     }
                     ?>
                 </select>
             </div>
 
             <!-- Vuelo -->
-            <div class="form-group">
-                <label for="vuelo">Destino (Vuelo):</label>
-                <select name="id_vuelo" required>
+            <div>
+                <label class="block text-gray-700 font-semibold mb-1">Destino (Vuelo)</label>
+                <select name="id_vuelo" required class="w-full border rounded px-3 py-2">
                     <?php
-                    $res = $conexion->query("SELECT v.id_vuelo, p.nombre_pais, c.nombre_ciudad 
-                                             FROM vuelos v
-                                             JOIN ciudades c ON v.id_ciudad_destino = c.id_ciudad
-                                             JOIN paises p ON c.id_pais = p.id_pais");
+                    $res = $conexion->query("
+                        SELECT v.id_vuelo, c.nombre_ciudad, p.nombre_pais 
+                        FROM vuelos v 
+                        JOIN ciudades c ON v.id_ciudad_destino = c.id_ciudad
+                        JOIN paises p ON c.id_pais = p.id_pais
+                    ");
                     while ($row = $res->fetch_assoc()) {
-                        $selected = ($row['id_vuelo'] == $paquete['id_vuelo']) ? 'selected' : '';
-                        echo "<option value='{$row['id_vuelo']}' $selected>{$row['nombre_pais']} - {$row['nombre_ciudad']}</option>";
+                        $sel = ($row['id_vuelo'] == $paquete['id_vuelo']) ? 'selected' : '';
+                        echo "<option value='{$row['id_vuelo']}' $sel>{$row['nombre_pais']} - {$row['nombre_ciudad']}</option>";
                     }
                     ?>
                 </select>
             </div>
 
-            <!-- Hotel Estadía -->
-            <div class="form-group">
-                <label for="hotel_estadia">Hotel y Estadía:</label>
-                <select name="id_hotel_estadia" required>
+            <!-- Hotel/Estadía -->
+            <div>
+                <label class="block text-gray-700 font-semibold mb-1">Hotel y Estadía</label>
+                <select name="id_hotel_estadia" required class="w-full border rounded px-3 py-2">
                     <?php
-                    $res = $conexion->query("SELECT he.id_hotel_estadia, h.hotel, he.estadia, t.tiempo 
-                                             FROM hotel_estadias he
-                                             JOIN hoteles h ON he.id_hotel = h.id_hotel
-                                             JOIN tiempo t ON he.id_tiempo = t.id_tiempo");
+                    $res = $conexion->query("
+                        SELECT he.id_hotel_estadia, h.hotel, he.estadia, t.tiempo 
+                        FROM hotel_estadias he
+                        JOIN hoteles h ON he.id_hotel = h.id_hotel
+                        JOIN tiempo t ON he.id_tiempo = t.id_tiempo
+                    ");
                     while ($row = $res->fetch_assoc()) {
-                        $selected = ($row['id_hotel_estadia'] == $paquete['id_hotel_estadia']) ? 'selected' : '';
-                        echo "<option value='{$row['id_hotel_estadia']}' $selected>{$row['hotel']} - {$row['estadia']} noches - {$row['tiempo']}</option>";
+                        $sel = ($row['id_hotel_estadia'] == $paquete['id_hotel_estadia']) ? 'selected' : '';
+                        echo "<option value='{$row['id_hotel_estadia']}' $sel>{$row['hotel']} - {$row['estadia']}  {$row['tiempo']}</option>";
                     }
                     ?>
                 </select>
             </div>
 
             <!-- Vehículo -->
-            <div class="form-group">
-                <label for="vehiculo">Vehículo:</label>
-                <select name="id_vehiculo" required>
+            <div>
+                <label class="block text-gray-700 font-semibold mb-1">Vehículo</label>
+                <select name="id_vehiculo" required class="w-full border rounded px-3 py-2">
                     <?php
                     $res = $conexion->query("SELECT id_vehiculo, gama FROM vehiculos");
                     while ($row = $res->fetch_assoc()) {
-                        $selected = ($row['id_vehiculo'] == $paquete['id_vehiculo']) ? 'selected' : '';
-                        echo "<option value='{$row['id_vehiculo']}' $selected>{$row['gama']}</option>";
+                        $sel = ($row['id_vehiculo'] == $paquete['id_vehiculo']) ? 'selected' : '';
+                        echo "<option value='{$row['id_vehiculo']}' $sel>{$row['gama']}</option>";
                     }
                     ?>
                 </select>
             </div>
 
-            <!-- Actividades en la ciudad destino -->
-            <div class="form-group">
-                <label for="actividad">Actividades en la ciudad destino:</label>
-                <select name="id_actividad" required>
+            <!-- Actividad -->
+            <div>
+                <label class="block text-gray-700 font-semibold mb-1">Actividad</label>
+                <select name="id_actividad" required class="w-full border rounded px-3 py-2">
                     <option value="">Seleccione una actividad</option>
-                    <?php
-                    while ($row = $result_actividades->fetch_assoc()) {
-                        echo "<option value='{$row['id_actividad']}'>{$row['actividad']}</option>";
-                    }
-                    ?>
+                    <?php while ($act = $actividades->fetch_assoc()): ?>
+                        <option value="<?= $act['id_actividad'] ?>"><?= $act['actividad'] ?></option>
+                    <?php endwhile; ?>
                 </select>
             </div>
 
-            <div class="form-group">
-                <input type="submit" value="Actualizar Paquete" class="btn-submit">
-                <a href="<?php echo BASE_URL; ?>/administrador/paquetes/paquetes.php">Cancelar</a>
+            <!-- Botones -->
+            <div class="flex justify-between items-center pt-4">
+                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
+                    Guardar Cambios
+                </button>
+                <a href="<?= BASE_URL ?>/administrador/paquetes/paquetes.php" class="text-red-600 hover:underline">Cancelar</a>
             </div>
         </form>
     </div>

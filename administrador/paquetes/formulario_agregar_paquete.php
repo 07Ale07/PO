@@ -40,6 +40,9 @@
     </style>
 </head>
 <body>
+    <?php
+    session_start(); 
+    ?>
     <h1>Agregar Nuevo Paquete</h1>
     
     <div class="form-container">

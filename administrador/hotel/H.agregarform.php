@@ -88,6 +88,9 @@
     </style>
 </head>
 <body>
+    <?php
+    session_start();
+    ?>
     <div class="form-container">
         <h2>Agregar Nuevo Hotel</h2>
         <form action="H.agregarhotelcod.php" method="post" enctype="multipart/form-data" id="hotelForm">

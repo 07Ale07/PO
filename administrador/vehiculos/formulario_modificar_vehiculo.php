@@ -36,7 +36,7 @@ $consulta->fetch();
 </head>
 <body>
     <h1>Modificar Vehículo</h1>
-    <form action="procesar_modificar_vehiculo.php" method="POST">
+    <form action="modificar_vehiculo.php" method="POST">
         <input type="hidden" name="id_vehiculo" value="<?= htmlspecialchars($id) ?>">
         <label for="gama_vehiculo">Gama:</label>
         <input type="text" name="gama_vehiculo" id="gama_vehiculo" value="<?= htmlspecialchars($gama) ?>" required>

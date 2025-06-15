@@ -13,7 +13,7 @@ $precio = $_POST['precio'];
 
 if(isset($_POST['subir_new_vehiculo'])){
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
-        $insertar_new_vehiculo = $conexion->prepare('INSERT INTO vehiculos(gama, precio) VALUES (?,?)');
+        $insertar_new_vehiculo = $conexion->prepare('INSERT INTO vehiculos(gama, precio,activo) VALUES (?,?,true)');
         $insertar_new_vehiculo->bind_param("sd",$gama_vehiculo,$precio);
         $insertar_new_vehiculo->execute();
 
